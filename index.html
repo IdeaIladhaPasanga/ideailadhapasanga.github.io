@@ -1,14 +1,11 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
   <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>AR Poster Scanner</title>
-
-    <!-- Stable A-Frame & MindAR Scripts -->
+    <!-- A-Frame and MindAR Libraries -->
     <script src="https://aframe.io/releases/1.4.2/aframe.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/mind-ar@1.2.2/dist/mindar-image-aframe.prod.js"></script>
-
     <style>
       body {
         margin: 0;
@@ -16,55 +13,58 @@
       }
       #soundBtn {
         position: fixed;
-        bottom: 30px;
+        bottom: 25px;
         left: 50%;
         transform: translateX(-50%);
-        background-color: #00e676;
-        color: #000000;
-        font-weight: 700;
-        font-family: sans-serif;
-        font-size: 14px;
-        padding: 12px 24px;
+        z-index: 999999;
+        background-color: #00d26a;
+        color: #ffffff;
         border: none;
         border-radius: 30px;
+        padding: 12px 26px;
+        font-size: 15px;
+        font-weight: bold;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.35);
         cursor: pointer;
-        z-index: 99999;
-        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-family: sans-serif;
       }
     </style>
   </head>
-
   <body>
-    <!-- Tap to Unmute Button -->
+    <!-- Sound Button -->
     <button id="soundBtn">🔊 Tap for Sound</button>
 
     <a-scene 
-      mindar-image="imageTargetSrc: ./targets.mind; autoStart: true; uiLoading: yes; uiScanning: yes;" 
+      mindar-image="imageTargetSrc: ./targets.mind;" 
       color-space="sRGB" 
       renderer="colorManagement: true, physicallyCorrectLights" 
       vr-mode-ui="enabled: false" 
       device-orientation-permission-ui="enabled: false">
       
-      <a-assets timeout="30000">
+      <a-assets>
         <video 
           id="arVideo" 
           src="./video.mp4" 
           preload="auto" 
-          loop 
+          loop="true" 
+          crossorigin="anonymous" 
           playsinline 
           webkit-playsinline 
-          muted 
-          crossorigin="anonymous">
+          muted>
         </video>
       </a-assets>
 
       <a-camera position="0 0 0" look-controls="enabled: false"></a-camera>
 
-      <a-entity id="targetEntity" mindar-image-target="targetIndex: 0">
+      <!-- 2:3 Ratio (Width: 1, Height: 1.5) -->
+      <a-entity mindar-image-target="targetIndex: 0">
         <a-video 
           src="#arVideo" 
           position="0 0 0" 
-          height="1.414" 
+          height="1.5" 
           width="1" 
           rotation="0 0 0">
         </a-video>
@@ -73,24 +73,29 @@
 
     <script>
       const video = document.querySelector('#arVideo');
-      const targetEntity = document.querySelector('#targetEntity');
       const soundBtn = document.querySelector('#soundBtn');
 
-      // Video plays automatically when poster is scanned
-      targetEntity.addEventListener('targetFound', () => {
+      // Video auto play on target found
+      const targetEntity = document.querySelector('[mindar-image-target]');
+      targetEntity.addEventListener("targetFound", () => {
         video.play();
       });
 
-      // Video pauses when phone is moved away from poster
-      targetEntity.addEventListener('targetLost', () => {
+      targetEntity.addEventListener("targetLost", () => {
         video.pause();
       });
 
-      // Audio enables on tap
+      // Sound toggle logic
       soundBtn.addEventListener('click', () => {
-        video.muted = false;
-        video.play();
-        soundBtn.style.display = 'none';
+        if (video.muted) {
+          video.muted = false;
+          soundBtn.innerText = '🔇 Mute Sound';
+          soundBtn.style.backgroundColor = '#ff4757';
+        } else {
+          video.muted = true;
+          soundBtn.innerText = '🔊 Tap for Sound';
+          soundBtn.style.backgroundColor = '#00d26a';
+        }
       });
     </script>
   </body>
