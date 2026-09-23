@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>AR Poster Scanner</title>
+
+    <!-- Stable A-Frame & MindAR Scripts -->
+    <script src="https://aframe.io/releases/1.4.2/aframe.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/mind-ar@1.2.2/dist/mindar-image-aframe.prod.js"></script>
+
+    <style>
+      body {
+        margin: 0;
+        overflow: hidden;
+      }
+      #soundBtn {
+        position: fixed;
+        bottom: 30px;
+        left: 50%;
+        transform: translateX(-50%);
+        background-color: #00e676;
+        color: #000000;
+        font-weight: 700;
+        font-family: sans-serif;
+        font-size: 14px;
+        padding: 12px 24px;
+        border: none;
+        border-radius: 30px;
+        cursor: pointer;
+        z-index: 99999;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
+      }
+    </style>
+  </head>
+
+  <body>
+    <!-- Tap to Unmute Button -->
+    <button id="soundBtn">🔊 Tap for Sound</button>
+
+    <a-scene 
+      mindar-image="imageTargetSrc: ./targets.mind; autoStart: true; uiLoading: yes; uiScanning: yes;" 
+      color-space="sRGB" 
+      renderer="colorManagement: true, physicallyCorrectLights" 
+      vr-mode-ui="enabled: false" 
+      device-orientation-permission-ui="enabled: false">
+      
+      <a-assets timeout="30000">
+        <video 
+          id="arVideo" 
+          src="./video.mp4" 
+          preload="auto" 
+          loop 
+          playsinline 
+          webkit-playsinline 
+          muted 
+          crossorigin="anonymous">
+        </video>
+      </a-assets>
+
+      <a-camera position="0 0 0" look-controls="enabled: false"></a-camera>
+
+      <a-entity id="targetEntity" mindar-image-target="targetIndex: 0">
+        <a-video 
+          src="#arVideo" 
+          position="0 0 0" 
+          height="1.414" 
+          width="1" 
+          rotation="0 0 0">
+        </a-video>
+      </a-entity>
+    </a-scene>
+
+    <script>
+      const video = document.querySelector('#arVideo');
+      const targetEntity = document.querySelector('#targetEntity');
+      const soundBtn = document.querySelector('#soundBtn');
+
+      // Video plays automatically when poster is scanned
+      targetEntity.addEventListener('targetFound', () => {
+        video.play();
+      });
+
+      // Video pauses when phone is moved away from poster
+      targetEntity.addEventListener('targetLost', () => {
+        video.pause();
+      });
+
+      // Audio enables on tap
+      soundBtn.addEventListener('click', () => {
+        video.muted = false;
+        video.play();
+        soundBtn.style.display = 'none';
+      });
+    </script>
+  </body>
+</html>
