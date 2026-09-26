@@ -2,8 +2,8 @@
 <html>
   <head>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AR Poster Scanner</title>
-    <!-- A-Frame and MindAR Libraries -->
+    <title>Porsche 911 AR Experience</title>
+    <!-- A-Frame & MindAR Libraries -->
     <script src="https://aframe.io/releases/1.4.2/aframe.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/mind-ar@1.2.2/dist/mindar-image-aframe.prod.js"></script>
     <style>
@@ -17,24 +17,21 @@
         left: 50%;
         transform: translateX(-50%);
         z-index: 999999;
-        background-color: #00d26a;
+        background-color: #e10600;
         color: #ffffff;
         border: none;
         border-radius: 30px;
         padding: 12px 26px;
         font-size: 15px;
         font-weight: bold;
-        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.35);
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
         cursor: pointer;
-        display: flex;
-        align-items: center;
-        gap: 8px;
         font-family: sans-serif;
       }
     </style>
   </head>
   <body>
-    <!-- Sound Button -->
+    <!-- Sound Toggle Button -->
     <button id="soundBtn">🔊 Tap for Sound</button>
 
     <a-scene 
@@ -59,7 +56,7 @@
 
       <a-camera position="0 0 0" look-controls="enabled: false"></a-camera>
 
-      <!-- 2:3 Ratio (Width: 1, Height: 1.5) -->
+      <!-- Target Card Entity (2:3 Aspect Ratio) -->
       <a-entity mindar-image-target="targetIndex: 0">
         <a-video 
           src="#arVideo" 
@@ -74,27 +71,28 @@
     <script>
       const video = document.querySelector('#arVideo');
       const soundBtn = document.querySelector('#soundBtn');
-
-      // Video auto play on target found
       const targetEntity = document.querySelector('[mindar-image-target]');
+
+      // Auto play on target detect
       targetEntity.addEventListener("targetFound", () => {
         video.play();
       });
 
+      // Pause when out of frame
       targetEntity.addEventListener("targetLost", () => {
         video.pause();
       });
 
-      // Sound toggle logic
+      // Sound button handler
       soundBtn.addEventListener('click', () => {
         if (video.muted) {
           video.muted = false;
           soundBtn.innerText = '🔇 Mute Sound';
-          soundBtn.style.backgroundColor = '#ff4757';
+          soundBtn.style.backgroundColor = '#333333';
         } else {
           video.muted = true;
           soundBtn.innerText = '🔊 Tap for Sound';
-          soundBtn.style.backgroundColor = '#00d26a';
+          soundBtn.style.backgroundColor = '#e10600';
         }
       });
     </script>
